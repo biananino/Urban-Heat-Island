@@ -58,7 +58,7 @@ def distance_band(tree1, tree2, threshold, binary=False, distance_metric=2, alph
     binary : bool, optional (default=False)
         If True, all weights are binary (1 if distance < `threshold`, else 0).
         If False, applies distance decay using `alpha`.
-    distance_metric : int, optional (default=2)
+    distance_metric : float, optional (default=2)
         Minkowski p-norm parameter (e.g., 2=Euclidean, 1=Manhattan).
     alpha : float, optional (default=-1)
         Distance decay exponent (passed to `distance_decay`).
@@ -137,7 +137,7 @@ def kernel_weights(tree1, tree2, kernel, bandwidth, eps=1e-7, distance_metric=2)
         Points beyond (bandwidth + eps) are excluded.
     eps : float, optional (default=1e-7)
         Small buffer added to bandwidth for numerical stability in distance comparisons.
-    distance_metric : int, optional (default=2)
+    distance_metric : float, optional (default=2)
         Minkowski p-norm parameter (2=Euclidean, 1=Manhattan).
 
         Returns
@@ -358,8 +358,8 @@ def knn_matrix(tree, coordinates, k=1, max_distance=np.inf, binary=True,
         Maximum distance to consider for neighbors (default: infinity)
     binary : bool, optional
         If True, all non-zero distances are set to 1 (default: True)
-    distance_metric : int, optional
-        Which Minkowski p-norm to use (default: 2, Euclidean distance)
+    distance_metric : float, optional
+        Minkowski p-norm parameter (2=Euclidean, 1=Manhattan).
 
     Returns
     -------
