@@ -38,17 +38,21 @@ def row_normalize(distance_matrix):
     distance_matrix = distance_matrix.multiply(1.0 / row_sums)
     return distance_matrix
 
-def distance_band(tree1, tree2, threshold, binary=False, distance_metric=2, alpha=-1):
-    """Computes a spatial weight matrix between points in two KD-trees within a distance band.
 
-    For each point in `tree1`, calculates weights for neighboring points in `tree2` within
-    `threshold` distance. Weights can be binary (1/0) or distance-decayed (using `alpha`).
-    Output is a sparse matrix suitable for calculating spatial lag.
+def distance_band(tree1, tree2, threshold, binary=False, distance_metric=2, alpha=-1):
+    """
+    Computes a spatial weight matrix between points in two KD-trees within a
+    distance band.
+
+    For each point in `tree1`, calculates weights for neighboring points in `tree2`
+    within `threshold` distance. Weights can be binary (1/0) or distance-decayed
+    (using `alpha`). Output is a sparse matrix suitable for calculating spatial lag.
 
     Parameters
     ----------
     tree1, tree2 : scipy.spatial.KDTree
-        KD-trees containing point coordinates for source (`tree1`) and target (`tree2`) points.
+        KD-trees containing point coordinates for source (`tree1`) and target (`tree2`)
+        points.
     threshold : float
         Maximum distance for neighboring points to be included in the weight matrix.
     binary : bool, optional (default=False)
@@ -108,18 +112,19 @@ def distance_band(tree1, tree2, threshold, binary=False, distance_metric=2, alph
     return dist_matrix
 
 
-# noinspection PyTypeChecker
 def kernel_weights(tree1, tree2, kernel, bandwidth, eps=1e-7, distance_metric=2):
     """Computes a spatial weight matrix between points in two KD-trees.
 
-    For each point in `tree1`, calculates weights for neighboring points in `tree2` within
-    `bandwidth` distance, applying the specified kernel function to decay weights with distance.
+    For each point in `tree1`, calculates weights for neighboring points in `tree2`
+    within `bandwidth` distance, applying the specified kernel function to decay
+    weights with distance.
     Output is a sparse matrix suitable for calculating spatial lag.
 
     Parameters
     ----------
     tree1, tree2 : scipy.spatial.KDTree
-        KD-trees containing point coordinates for source (`tree1`) and target (`tree2`) points.
+        KD-trees containing point coordinates for source (`tree1`) and target (`tree2`)
+        points.
     kernel : str
         Kernel function to apply. One of:
         - 'triangular': Linear decay (1 - distance/bandwidth)
@@ -333,7 +338,8 @@ def gaussian_kernel(z):
     return ((2 * np.pi) ** (-1 / 2)) * np.exp((-(z**2)) / 2)
 
 
-def knn_matrix(tree, coordinates, k = 1, max_distance = np.inf, binary = True, distance_metric = 2):
+def knn_matrix(tree, coordinates, k=1, max_distance=np.inf, binary=True,
+               distance_metric=2):
     """Calculate a sparse distance matrix containing only the k-nearest neighbors.
 
     For each point in coordinates, finds its k-nearest neighbors in the KD-tree and
@@ -399,20 +405,23 @@ def knn_matrix(tree, coordinates, k = 1, max_distance = np.inf, binary = True, d
            [1., 1., 0.],
            [0., 1., 1.]])
     """
-    distances, neighbours = tree.query(coordinates, k = k, p = distance_metric,
-                                     distance_upper_bound = max_distance) #Query tree for KNN
+    # Query tree for KNN
+    distances, neighbours = tree.query(coordinates, k=k, p=distance_metric,
+                                       distance_upper_bound=max_distance)
     matrix_nrows = len(coordinates)
     matrix_ncols = tree.n
 
-    mask = np.isfinite(distances)   #To delete infinite distances when they occur
+    mask = np.isfinite(distances)   # To delete infinite distances when they occur
     row = np.repeat(np.arange(matrix_nrows), k)[mask.ravel()]
     col = neighbours.ravel()[mask.ravel()]
     data = distances.ravel()[mask.ravel()]
     if binary is True:
         data = np.ones_like(data)
-    #Construct matrix
-    distance_matrix = scipy.sparse.coo_matrix( (data, (row, col) ), shape = (matrix_nrows, matrix_ncols))
+    # Construct matrix
+    distance_matrix = scipy.sparse.coo_matrix((data, (row, col)),
+                                              shape=(matrix_nrows, matrix_ncols))
     return distance_matrix
+
 
 if __name__ == "__main__":
     import doctest
