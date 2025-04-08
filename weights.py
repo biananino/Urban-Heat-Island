@@ -39,6 +39,13 @@ def row_normalize(distance_matrix):
     return distance_matrix
 
 
+def _distance_decay(data, alpha):
+    if alpha >= 0:
+        return data
+    elif alpha < 0:
+        return np.float_power(data, alpha, where=data > 0)
+
+
 def distance_band(tree1, tree2, threshold, binary=False, distance_metric=2, alpha=-1):
     """
     Computes a spatial weight matrix between points in two KD-trees within a
@@ -104,11 +111,8 @@ def distance_band(tree1, tree2, threshold, binary=False, distance_metric=2, alph
     if binary is True:
         dist_matrix.data = np.where(dist_matrix.data, 1, 0)
     elif binary is False:
-        dist_matrix.data = np.where(
-            alpha >= 0,
-            dist_matrix.data,
-            np.float_power(dist_matrix.data, alpha, where=dist_matrix.data > 0),
-        )
+        dist_matrix.data = np.where(dist_matrix.data,
+                                    _distance_decay(dist_matrix.data, alpha), 0)
     return dist_matrix
 
 
